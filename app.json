@@ -8,6 +8,9 @@
     "scheme": "parentsapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "assetBundlePatterns": [
+      "assets/images/**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -16,7 +19,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.professorpcthomas.com.parentsApp"
     },
     "web": {
       "bundler": "metro",
@@ -33,10 +37,17 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "BASEURL": "https://backend.professorpcthomas.com/api"
     }
   }
 }
