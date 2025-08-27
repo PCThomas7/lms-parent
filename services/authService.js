@@ -1,24 +1,33 @@
 import { api } from "./api";
 
 const authService = {
-
+  
   login: async (email, password) => {
-    const response = await api.post('/auth/login', { email, password });
+    const response = await api.post("/auth/login", { email, password });
     return response.data;
   },
 
-  register:async (name,email,password) => {
+  register: async (name, email, password) => {
     try {
-      const response = await api.post('/auth/registet',{
+      const response = await api.post("/auth/registet", {
         name,
         email,
-        password
-      })
+        password,
+      });
       return response;
     } catch (error) {
-      console.log("error : ",error)
+      console.log("error : ", error);
     }
-  }
+  },
+
+  googleLogin: async (userInfo) => {
+    try {
+      const response = await api.post(`/auth/google`, { userInfo });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
   
 };
 

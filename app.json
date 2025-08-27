@@ -29,6 +29,7 @@
     },
     "plugins": [
       "expo-router",
+      "@react-native-google-signin/google-signin",
       [
         "expo-splash-screen",
         {
@@ -47,7 +48,11 @@
       "router": {
         "origin": false
       },
-      "BASEURL": "https://backend.professorpcthomas.com/api"
-    }
+      "BASEURL": "https://backend.professorpcthomas.com/api",
+      "eas": {
+        "projectId": "96aaa33f-5856-4937-a0e4-c9bc0b71ac16"
+      }
+    },
+    "owner": "professorpcthomas.com"
   }
 }
