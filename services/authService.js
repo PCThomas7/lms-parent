@@ -9,7 +9,7 @@ const authService = {
 
   register: async (name, email, password) => {
     try {
-      const response = await api.post("/auth/registet", {
+      const response = await api.post("/auth/register", {
         name,
         email,
         password,

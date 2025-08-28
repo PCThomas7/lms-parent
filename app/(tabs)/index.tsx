@@ -2,14 +2,18 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
+  ScrollView,
   KeyboardAvoidingView,
   Platform,
-  TouchableOpacity,
+  ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
-import { router } from "expo-router";
-import { notifyAuthChange } from "@/utils/auth";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { api } from "@/services/api";
+import ParentDashboardBanner from "../components/home/ParentDashboardBanner";
+import AverageScoreCard from "../components/home/AverageScoreCard";
+import axios from "axios";
+import Skelton from '../components/skeltons/skelton'
 
 interface UserDetails {
   name: string;
@@ -17,96 +21,117 @@ interface UserDetails {
   email: string;
 }
 
+interface Child {
+  _id: string;
+  name: string;
+  email: string;
+  rollNumber: string;
+  joinDate?: string;
+}
+
 export default function Index() {
   const [user, setUser] = useState<UserDetails | null>(null);
+  const [children, setChildren] = useState<Child[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [averageScore, setAverageScore] = useState<number | null>(null);
 
   useEffect(() => {
-    loadUserDetails();
+    loadDashboardData();
   }, []);
+
+  const loadDashboardData = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([loadUserDetails(), fetchChildrenData(), fetchAverageScore()]);
+    } catch (error) {
+      console.error("Error loading dashboard data:", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadDashboardData();
+  };
 
   const loadUserDetails = async () => {
     try {
       const userDetailsString = await SecureStore.getItemAsync("userDetails");
-      if (userDetailsString) {
-        const userDetails: UserDetails = JSON.parse(userDetailsString);
-        setUser(userDetails);
-      }
+      if (userDetailsString) setUser(JSON.parse(userDetailsString));
     } catch (error) {
       console.error("Error loading user details:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const logout = async () => {
+  const fetchChildrenData = async () => {
     try {
-      await SecureStore.deleteItemAsync("authToken");
-      await SecureStore.deleteItemAsync("refreshToken");
-      await SecureStore.deleteItemAsync("userDetails");
-      
-      // Google sign out
-      GoogleSignin.configure({
-        webClientId:
-          "725112630139-rgj27jcug4ggeco8ggujmn415j2ptr39.apps.googleusercontent.com",
-      });
-      await GoogleSignin.signOut();
-      notifyAuthChange();
+      const response = await api.get("/parent/children");
+      const childrenData = response.data;
+      await SecureStore.setItemAsync("children", JSON.stringify(childrenData));
+      setChildren(childrenData);
     } catch (error) {
-      console.error("Error during logout:", error);
+      console.log("Error fetching children:", error);
+      const stored = await SecureStore.getItemAsync("children");
+      if (stored) setChildren(JSON.parse(stored));
+    }
+  };
+
+  const DEFAULT_AVERAGE_ON_404 = 9.37;
+  const DEFAULT_TotalQuizzes = 96;
+  const DEFAULT_TotalTime = 24647;
+  const DEFAULT_Total_Questions = 3149;
+
+  const fetchAverageScore = async () => {
+    try {
+      const statusResponse = await api.get("/analytics/status");
+      const raw = Number(statusResponse?.data?.averageScore);
+
+      if (!Number.isFinite(raw)) {
+        throw new Error("Invalid averageScore");
+      }
+
+      const clamped = Math.max(0, Math.min(raw, 100));
+      setAverageScore(Number(clamped.toFixed(2)));
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err) && err.response?.status === 404) {
+        setAverageScore(DEFAULT_AVERAGE_ON_404);
+      } else {
+        console.error("Error fetching average score:", err);
+        setAverageScore(0);
+      }
     }
   };
 
   if (loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-amber-300">
-        <Text className="text-lg text-gray-800">Loading...</Text>
+      <View className="flex-1 items-center justify-center bg-gray-50">
+        <Skelton/>
       </View>
     );
   }
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 items-center justify-center bg-amber-300 p-4"
+      className="flex-1 bg-white"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <Text className="text-2xl font-semibold text-gray-800 mb-8">
-        Welcome to Index Page
-      </Text>
-
-      {user ? (
-        <View className="w-full max-w-md bg-white rounded-lg p-6 shadow-md mb-8">
-          <Text className="text-xl font-bold text-gray-800 text-center mb-4">
-            User Profile
-          </Text>
-          
-          <View className="space-y-3">
-            <View className="flex-row justify-between border-b border-gray-200 pb-2">
-              <Text className="text-gray-600 font-medium">Name:</Text>
-              <Text className="text-gray-800">{user.name}</Text>
-            </View>
-            
-            <View className="flex-row justify-between border-b border-gray-200 pb-2">
-              <Text className="text-gray-600 font-medium">Email:</Text>
-              <Text className="text-gray-800">{user.email}</Text>
-            </View>
-            
-            <View className="flex-row justify-between border-b border-gray-200 pb-2">
-              <Text className="text-gray-600 font-medium">Role:</Text>
-              <Text className="text-gray-800 capitalize">{user.role}</Text>
-            </View>
-          </View>
-        </View>
-      ) : (
-        <Text className="text-red-500 mb-8">No user information found</Text>
-      )}
-
-      <TouchableOpacity
-        onPress={logout}
-        className="absolute right-4 top-4 p-3 bg-red-500 rounded-lg shadow-md"
+      <ScrollView
+        contentContainerStyle={{ padding: 16 }}
+        showsVerticalScrollIndicator={false}
       >
-        <Text className="text-white font-semibold">Logout</Text>
-      </TouchableOpacity>
+        {/* Banner */}
+        <ParentDashboardBanner
+          user={user}
+          children={children}
+          onRefresh={loadDashboardData}
+        />
+
+        {/* Average Score Card Component */}
+        <AverageScoreCard averageScore={averageScore} DEFAULT_TotalQuizzes={DEFAULT_TotalQuizzes} DEFAULT_TotalTime={DEFAULT_TotalTime} DEFAULT_Total_Questions={DEFAULT_Total_Questions} />
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }

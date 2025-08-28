@@ -33,10 +33,10 @@ type FormErrors = {
 };
 
 type googleData = {
-  email:string,
-  name:String,
-  sub:string
-}
+  email: string;
+  name: String;
+  sub: string;
+};
 
 const Login: React.FC<LoginProps> = ({ toggleAuth }) => {
   const [formData, setFormData] = useState<FormData>({
@@ -92,27 +92,29 @@ const Login: React.FC<LoginProps> = ({ toggleAuth }) => {
 
     try {
       const data = await authService.login(formData.email, formData.password);
+      const { user, token, refreshToken } = data;
 
-      await SecureStore.setItemAsync("authToken", data.token);
-      await SecureStore.setItemAsync("refreshToken", data.refreshToken);
-      await SecureStore.setItemAsync("userDetails", JSON.stringify(data.user));
-      notifyAuthChange();
-      if (data.user.role === "Parent") {
+      if (user.role === "Parent") {
+        await Promise.all([
+          SecureStore.setItemAsync("authToken", token),
+          SecureStore.setItemAsync("refreshToken", refreshToken),
+          SecureStore.setItemAsync("userDetails", JSON.stringify(user)),
+        ]);
+
+        notifyAuthChange();
         router.replace("/(tabs)");
       } else {
-        Alert.alert(
-          "Access Denied",
-          "Only Parents are allowed to access this application"
-        );
         notifyAuthChange();
+        router.replace("/Auth");
       }
     } catch (err: any) {
       console.error("Login failed:", err);
-      Alert.alert(
-        "Login Failed",
+
+      const errorMessage =
         err.response?.data?.message ||
-          "Invalid email or password. Please try again."
-      );
+        "Invalid email or password. Please try again.";
+
+      Alert.alert("Login Failed", errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -122,7 +124,7 @@ const Login: React.FC<LoginProps> = ({ toggleAuth }) => {
     router.push("/components/auth/ForgotPassword");
   };
 
-  const handleGoogleSignIn = async (googleData:googleData) => {
+  const handleGoogleSignIn = async (googleData: googleData) => {
     try {
       const userInfo = {
         name: googleData.name,
@@ -135,7 +137,7 @@ const Login: React.FC<LoginProps> = ({ toggleAuth }) => {
       await SecureStore.setItemAsync("refreshToken", refreshToken);
       await SecureStore.setItemAsync("userDetails", JSON.stringify(user));
       notifyAuthChange();
-       router.replace("/(tabs)");
+      router.replace("/(tabs)");
     } catch (err: any) {
       console.log("Google login failed:", err.response?.data || err);
       Alert.alert("Error", "Google login failed");

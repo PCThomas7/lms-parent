@@ -1,60 +1,67 @@
-import React from 'react';
-import { Platform, useWindowDimensions } from 'react-native';
-import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { HapticTab } from '../components/HapticTab';
+import React from "react";
+import { Platform, useWindowDimensions } from "react-native";
+import { Tabs } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { HapticTab } from "../components/HapticTab";
 
 export default function TabLayout() {
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
-  const isAndroid = Platform.OS === 'android';
+  const isAndroid = Platform.OS === "android";
 
-  const screenOptions: React.ComponentProps<typeof Tabs>['screenOptions'] = {
+  const screenOptions: React.ComponentProps<typeof Tabs>["screenOptions"] = {
     headerShown: false,
-    tabBarActiveTintColor: '#6366F1',
-    tabBarInactiveTintColor: '#888',
+    tabBarActiveTintColor: "#E11D48",
+    tabBarInactiveTintColor: "#888",
     tabBarButton: HapticTab,
     tabBarStyle: {
       height: isLandscape ? 50 : 70,
       paddingTop: 8,
-      paddingBottom: isAndroid ? (isLandscape ? 0 : 4) : (isLandscape ? 0 : 16),
-      backgroundColor: '#fff',
+      paddingBottom: isAndroid ? (isLandscape ? 0 : 4) : isLandscape ? 0 : 16,
+      backgroundColor: "#fff",
       borderTopWidth: 0,
       elevation: 0,
       shadowOpacity: 0,
-      position: Platform.select({ ios: 'absolute', default: 'relative' }),
+      position: Platform.select({ ios: "absolute", default: "relative" }),
     },
     tabBarLabelStyle: {
       fontSize: isLandscape ? 10 : 12,
       marginBottom: isLandscape ? 0 : 4,
-      fontWeight: '500',
+      fontWeight: "500",
     },
     tabBarItemStyle: {
       marginHorizontal: isLandscape ? 2 : 4,
       height: isLandscape ? 50 : 60,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
     },
   };
 
   const tabScreens: {
     name: string;
     title: string;
-    iconName: { focused: keyof typeof Ionicons.glyphMap, outline: keyof typeof Ionicons.glyphMap };
+    iconName: {
+      focused: keyof typeof Ionicons.glyphMap;
+      outline: keyof typeof Ionicons.glyphMap;
+    };
   }[] = [
-      {
-        name: 'index',
-        title: 'Home',
-        iconName: { focused: 'home', outline: 'home-outline' },
-      },
-      {
-        name: 'explore',
-        title: 'Explore',
-        iconName: { focused: 'paper-plane', outline: 'paper-plane-outline' },
-      },
-    ];
-
+    {
+      name: "index",
+      title: "Home",
+      iconName: { focused: "home", outline: "home-outline" },
+    },
+    {
+      name: "analytics",
+      title: "Analytics",
+      iconName: { focused: "stats-chart", outline: "stats-chart-outline" }, // charts/metrics
+    },
+    {
+      name: "reports",
+      title: "Reports",
+      iconName: { focused: "document-text", outline: "document-text-outline" }, // documents/reports
+    },
+  ];
 
   return (
     <Tabs screenOptions={screenOptions}>

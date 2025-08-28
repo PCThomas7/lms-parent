@@ -48,3 +48,23 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+
+
+  <!-- const logout = async () => {
+    try {
+      await SecureStore.deleteItemAsync("authToken");
+      await SecureStore.deleteItemAsync("refreshToken");
+      await SecureStore.deleteItemAsync("userDetails");
+      
+      // Google sign out
+      GoogleSignin.configure({
+        webClientId:
+          "725112630139-rgj27jcug4ggeco8ggujmn415j2ptr39.apps.googleusercontent.com",
+      });
+      await GoogleSignin.signOut();
+      notifyAuthChange();
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  }; -->
