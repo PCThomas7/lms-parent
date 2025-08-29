@@ -1,110 +1,155 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React, { useEffect } from "react";
+import {
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import { useAppDispatch } from "../../redux/hooks";
+import { fetchStudentAnalytics } from "../../redux/slices/analyticsThunk";
 
-import { Collapsible } from '../components/Collapsible';
-import { ExternalLink } from '../components/ExternalLink';
-import ParallaxScrollView from '../components/ParallaxScrollView';
-import { ThemedText } from '../components/ThemedText';
-import { ThemedView } from '../components/ThemedView';
-import { IconSymbol } from '../components/ui/IconSymbol';
+type NavItem = {
+  label: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  route: string;
+  subtitle?: string;
+};
 
-export default function TabTwoScreen() {
+const ICON_COLOR = "#DA1C5C";
+const ICON_BG = "#FCE4EC";
+
+const NAV_ITEMS: NavItem[] = [
+  {
+    label: "Overall Performance",
+    icon: "stats-chart",
+    route: "/components/analytics/OverallPerformance",
+    subtitle: "Scores, attempts & accuracy",
+  },
+  {
+    label: "Subject Analysis",
+    icon: "book",
+    route: "/components/analytics/SubjectAnalysis",
+    subtitle: "Strengths by subject",
+  },
+  {
+    label: "Difficulty Analysis",
+    icon: "trending-up",
+    route: "/components/analytics/DifficultyAnalysis",
+    subtitle: "Easy • Medium • Hard",
+  },
+  {
+    label: "Question Types",
+    icon: "help-circle",
+    route: "/components/analytics/QuestionTypes",
+    subtitle: "MCQ, MMCQ, Numeric",
+  },
+  {
+    label: "Performance Trends",
+    icon: "analytics",
+    route: "/components/analytics/PerformanceOverview",
+    subtitle: "Progress over time",
+  },
+  {
+    label: "Time Analysis",
+    icon: "time",
+    route: "/components/analytics/TimeAnalysis",
+    subtitle: "Time spent & pace",
+  },
+];
+
+const Analytics: React.FC = () => {
+  const router = useRouter();
+  const { width } = useWindowDimensions();
+  const isWide = width >= 700;
+  const isTablet = width >= 600;
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchStudentAnalytics());
+  }, [dispatch]);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
-  );
-}
+    <View className="flex-1 bg-gray-50">
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{
+          padding: isWide ? 24 : 16,
+          paddingBottom: 40,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+       
+        <View
+          className={`mt-2.5 ${
+            isWide || isTablet ? "flex-row flex-wrap" : "flex-col"
+          }`}
+          style={{ gap: 25 }}
+        >
+          {NAV_ITEMS.map((item) => (
+            <TouchableOpacity
+              key={item.route}
+              className={`
+                bg-white rounded-xl
+                ${isWide || isTablet ? "flex-1" : "w-full"}
+              `}
+              style={{
+                paddingVertical: isWide ? 20 : 14,
+                paddingHorizontal: isWide ? 20 : 14,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.02,
+                shadowRadius: 3,
+                elevation: 1,
+                minWidth: isWide || isTablet ? `${100 / 2 - 2}%` : "100%",
+                maxWidth: isWide || isTablet ? `${100 / 2 - 2}%` : "100%",
+                borderColor: "#dddbdbff",
+                borderWidth: 1.2,
+              }}
+              activeOpacity={0.9}
+              onPress={() => router.push(item.route as any)}
+            >
+              <View className="flex-row items-center">
+                <View
+                  className="w-[44px] h-[44px] rounded-full justify-center items-center mr-3"
+                  style={{ backgroundColor: ICON_BG }}
+                >
+                  <Ionicons name={item.icon} size={24} color={ICON_COLOR} />
+                </View>
 
-const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-});
+                <View className="flex-1 pr-2">
+                  <Text
+                    className="font-semibold text-gray-900"
+                    style={{ fontSize: isWide ? 18 : 17 }}
+                    numberOfLines={1}
+                  >
+                    {item.label}
+                  </Text>
+                  {item.subtitle && (
+                    <Text
+                      className="text-[13px] text-gray-500 mt-1"
+                      numberOfLines={1}
+                    >
+                      {item.subtitle}
+                    </Text>
+                  )}
+                </View>
+
+                <Ionicons name="chevron-forward" size={20} color="#DA1C5C" />
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <Text className="text-center text-[13px] text-gray-500 mt-6 italic">
+          Tap an option to explore your analytics
+        </Text>
+      </ScrollView>
+    </View>
+  );
+};
+
+export default Analytics;

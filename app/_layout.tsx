@@ -7,6 +7,8 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
+import { Provider } from 'react-redux';
+import {store} from '../redux/store'
 
 import '../global.css';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -71,6 +73,7 @@ export default function RootLayout() {
   }
 
   return (
+    <Provider store={store}>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <SafeAreaProvider>
         <SafeAreaView edges={['top', 'bottom', 'left', 'right']} style={{ flex: 1 }}>
@@ -91,5 +94,6 @@ export default function RootLayout() {
         </SafeAreaView>
       </SafeAreaProvider>
     </ThemeProvider>
+    </Provider>
   );
 }

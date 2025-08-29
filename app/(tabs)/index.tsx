@@ -13,7 +13,7 @@ import { api } from "@/services/api";
 import ParentDashboardBanner from "../components/home/ParentDashboardBanner";
 import AverageScoreCard from "../components/home/AverageScoreCard";
 import axios from "axios";
-import Skelton from '../components/skeltons/skelton'
+import Skelton from "../components/skeltons/skelton";
 
 interface UserDetails {
   name: string;
@@ -43,7 +43,11 @@ export default function Index() {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      await Promise.all([loadUserDetails(), fetchChildrenData(), fetchAverageScore()]);
+      await Promise.all([
+        loadUserDetails(),
+        fetchChildrenData(),
+        fetchAverageScore(),
+      ]);
     } catch (error) {
       console.error("Error loading dashboard data:", error);
     } finally {
@@ -108,7 +112,7 @@ export default function Index() {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-gray-50">
-        <Skelton/>
+        <Skelton />
       </View>
     );
   }
@@ -130,7 +134,12 @@ export default function Index() {
         />
 
         {/* Average Score Card Component */}
-        <AverageScoreCard averageScore={averageScore} DEFAULT_TotalQuizzes={DEFAULT_TotalQuizzes} DEFAULT_TotalTime={DEFAULT_TotalTime} DEFAULT_Total_Questions={DEFAULT_Total_Questions} />
+        <AverageScoreCard
+          averageScore={averageScore}
+          DEFAULT_TotalQuizzes={DEFAULT_TotalQuizzes}
+          DEFAULT_TotalTime={DEFAULT_TotalTime}
+          DEFAULT_Total_Questions={DEFAULT_Total_Questions}
+        />
       </ScrollView>
     </KeyboardAvoidingView>
   );

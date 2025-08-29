@@ -16,7 +16,7 @@ import authService from "../../../services/authService";
 import * as SecureStore from "expo-secure-store";
 import { router } from "expo-router";
 import { notifyAuthChange } from "@/utils/auth";
-import AuthOptions from "./GoogleAuth";
+// import AuthOptions from "./GoogleAuth";
 
 type LoginProps = {
   toggleAuth: () => void;
@@ -259,10 +259,10 @@ const Login: React.FC<LoginProps> = ({ toggleAuth }) => {
           </View>
 
           {/* Auth Options */}
-          <AuthOptions
+          {/* <AuthOptions
             isLoading={isLoading}
             handleGoogleSignIn={handleGoogleSignIn}
-          />
+          /> */}
 
           {/* Sign Up Link */}
           <View className="flex-row justify-center items-center mb-5">
