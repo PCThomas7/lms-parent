@@ -9,7 +9,7 @@ interface AppHeaderProps {
 
 const AppHeader: React.FC<AppHeaderProps> = ({ screenTitle, onBackPress }) => {
   return (
-    <View className="flex-row items-center px-4 py-2 border-b border-gray-200">
+    <View className="flex-row items-center px-4 py-3 border-b border-gray-200 bg-white">
       {onBackPress && (
         <TouchableOpacity
           onPress={onBackPress}

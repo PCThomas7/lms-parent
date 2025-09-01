@@ -18,7 +18,7 @@ type NavItem = {
   subtitle?: string;
 };
 
-const ICON_COLOR = "#DA1C5C";
+const ICON_COLOR = "#e94d81ff";
 const ICON_BG = "#FCE4EC";
 
 const NAV_ITEMS: NavItem[] = [
@@ -26,37 +26,31 @@ const NAV_ITEMS: NavItem[] = [
     label: "Overall Performance",
     icon: "stats-chart",
     route: "/components/analytics/OverallPerformance",
-    subtitle: "Scores, attempts & accuracy",
   },
   {
     label: "Subject Analysis",
     icon: "book",
     route: "/components/analytics/SubjectAnalysis",
-    subtitle: "Strengths by subject",
   },
   {
     label: "Difficulty Analysis",
     icon: "trending-up",
     route: "/components/analytics/DifficultyAnalysis",
-    subtitle: "Easy • Medium • Hard",
   },
   {
     label: "Question Types",
     icon: "help-circle",
     route: "/components/analytics/QuestionTypes",
-    subtitle: "MCQ, MMCQ, Numeric",
   },
   {
     label: "Performance Trends",
     icon: "analytics",
     route: "/components/analytics/PerformanceOverview",
-    subtitle: "Progress over time",
   },
   {
     label: "Time Analysis",
     icon: "time",
     route: "/components/analytics/TimeAnalysis",
-    subtitle: "Time spent & pace",
   },
 ];
 
@@ -73,7 +67,7 @@ const Analytics: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-white">
       <ScrollView
         className="flex-1"
         contentContainerStyle={{
@@ -101,9 +95,9 @@ const Analytics: React.FC = () => {
                 paddingHorizontal: isWide ? 20 : 14,
                 shadowColor: "#000",
                 shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.02,
-                shadowRadius: 3,
-                elevation: 1,
+                shadowOpacity: 0.01,
+                shadowRadius: 2,
+                elevation: 0.5,
                 minWidth: isWide || isTablet ? `${100 / 2 - 2}%` : "100%",
                 maxWidth: isWide || isTablet ? `${100 / 2 - 2}%` : "100%",
                 borderColor: "#dddbdbff",
@@ -128,24 +122,16 @@ const Analytics: React.FC = () => {
                   >
                     {item.label}
                   </Text>
-                  {item.subtitle && (
-                    <Text
-                      className="text-[13px] text-gray-500 mt-1"
-                      numberOfLines={1}
-                    >
-                      {item.subtitle}
-                    </Text>
-                  )}
                 </View>
 
-                <Ionicons name="chevron-forward" size={20} color="#DA1C5C" />
+                <Ionicons name="chevron-forward" size={20} color="#80797bff" />
               </View>
             </TouchableOpacity>
           ))}
         </View>
 
         <Text className="text-center text-[13px] text-gray-500 mt-6 italic">
-          Tap an option to explore your analytics
+          Tap an option to explore the analytics
         </Text>
       </ScrollView>
     </View>
