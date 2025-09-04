@@ -1,7 +1,6 @@
 import { api } from "./api";
 
 const service = {
-
   getStudentAnalyticsById: async (studentId) => {
     try {
       const timeRange = "all";
@@ -14,6 +13,12 @@ const service = {
       throw error;
     }
   },
-  
+
+  getStudentReports: async (studentId) => {
+    const response = await api.get(
+      `/parent/children/${studentId}/quiz-attempts`
+    );
+    return response.data;
+  },
 };
 export default service;

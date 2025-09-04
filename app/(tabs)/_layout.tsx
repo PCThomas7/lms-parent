@@ -12,7 +12,7 @@ export default function TabLayout() {
 
   const screenOptions: React.ComponentProps<typeof Tabs>["screenOptions"] = {
     headerShown: false,
-    tabBarActiveTintColor: "#E11D48",
+    tabBarActiveTintColor: "#6366F1",
     tabBarInactiveTintColor: "#888",
     tabBarButton: HapticTab,
     tabBarStyle: {

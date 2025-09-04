@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { useAppSelector } from '../../../redux/hooks';
 import { selectTimeSpentAnalysis } from '../../../redux/slices/analytics';
 import AppHeader from '../../components/header';
+import ResponsiveGridSkeleton from '../skeltons/skelton';
 
 
 const TimeAnalysis = () => {
@@ -25,12 +26,7 @@ const TimeAnalysis = () => {
 
   if (!timeData || Object.keys(timeData).length === 0) {
     return (
-      <SafeAreaView className="flex-1 bg-[#F9FAFB]">
-        <AppHeader screenTitle="Time Analysis" onBackPress={() => router.back()} />
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#4F46E5" />
-        </View>
-      </SafeAreaView>
+     <ResponsiveGridSkeleton/>
     );
   }
 
@@ -48,8 +44,8 @@ const TimeAnalysis = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F9FAFB]" edges={['top', 'left', 'right']}>
-      {/* Header */}
+     <View className='flex-1'>
+       {/* Header */}
       <AppHeader screenTitle="Time Analysis" onBackPress={() => router.back()} />
 
       {/* Content */}
@@ -151,7 +147,7 @@ const TimeAnalysis = () => {
           </View>
         </View>
       </View>
-    </SafeAreaView>
+     </View>
   );
 };
 

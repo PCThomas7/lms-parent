@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 import { useAppDispatch } from "../../redux/hooks";
-import { fetchStudentAnalytics } from "../../redux/slices/analyticsThunk";
+import { fetchStudentAnalytics } from "../../redux/slices/Thunk";
 
 type NavItem = {
   label: string;
@@ -18,8 +18,8 @@ type NavItem = {
   subtitle?: string;
 };
 
-const ICON_COLOR = "#e94d81ff";
-const ICON_BG = "#FCE4EC";
+const ICON_COLOR = "#6366F1";
+const ICON_BG = "#e0e0e6ff";
 
 const NAV_ITEMS: NavItem[] = [
   {
@@ -76,7 +76,6 @@ const Analytics: React.FC = () => {
         }}
         showsVerticalScrollIndicator={false}
       >
-       
         <View
           className={`mt-2.5 ${
             isWide || isTablet ? "flex-row flex-wrap" : "flex-col"
@@ -94,14 +93,14 @@ const Analytics: React.FC = () => {
                 paddingVertical: isWide ? 20 : 14,
                 paddingHorizontal: isWide ? 20 : 14,
                 shadowColor: "#000",
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.01,
-                shadowRadius: 2,
-                elevation: 0.5,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.15,
+                shadowRadius: 5,
+                elevation: 5,
                 minWidth: isWide || isTablet ? `${100 / 2 - 2}%` : "100%",
                 maxWidth: isWide || isTablet ? `${100 / 2 - 2}%` : "100%",
                 borderColor: "#dddbdbff",
-                borderWidth: 1.2,
+                borderWidth: 0.7,
               }}
               activeOpacity={0.9}
               onPress={() => router.push(item.route as any)}

@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { fetchStudentAnalytics } from './analyticsThunk';
+import { fetchStudentAnalytics } from './Thunk'
 import type { RootState } from '../store'; 
 
 /* ---------- Types for the payload ---------- */
