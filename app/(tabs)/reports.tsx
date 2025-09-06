@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { fetchStudentReport } from "@/redux/slices/Thunk";
 import { selectreport } from "@/redux/slices/report";
 import ResponsiveGridSkeleton from "../components/skeltons/skelton";
+import { router } from "expo-router";
 
 export default function Reports() {
   const dispatch = useAppDispatch();
@@ -250,6 +251,7 @@ export default function Reports() {
                   <TouchableOpacity
                     className="flex-row items-center justify-center py-2.5 rounded-xl bg-indigo-600"
                     activeOpacity={0.8}
+                    onPress={() => router.push('/components/report/detailedReport')}
                   >
                     <Text className="text-white text-sm font-semibold mr-2">
                       View Detailed Report
