@@ -1,15 +1,14 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   RefreshControl,
-  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { fetchStudentReport } from "@/redux/slices/Thunk";
+import { fetchStudentReport, fetchQuiz } from "@/redux/slices/Thunk";
 import { selectreport } from "@/redux/slices/report";
 import ResponsiveGridSkeleton from "../components/skeltons/skelton";
 import { router } from "expo-router";
@@ -17,18 +16,18 @@ import { router } from "expo-router";
 export default function Reports() {
   const dispatch = useAppDispatch();
   const data = useAppSelector(selectreport);
-  const [refreshing, setRefreshing] = React.useState(false);
-  const [loading, setLoading] = React.useState(true);
-
-  useEffect(() => {
-    loadReports();
-  }, []);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const loadReports = async () => {
     setLoading(true);
     await dispatch(fetchStudentReport());
     setLoading(false);
   };
+
+  useEffect(() => {
+    loadReports();
+  }, []);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -53,10 +52,16 @@ export default function Reports() {
       const isYesterday = date.toDateString() === yesterday.toDateString();
 
       if (isToday) {
-        return `Today, ${date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}`;
+        return `Today, ${date.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}`;
       }
       if (isYesterday) {
-        return `Yesterday, ${date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}`;
+        return `Yesterday, ${date.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}`;
       }
 
       return date.toLocaleDateString("en-US", {
@@ -76,7 +81,7 @@ export default function Reports() {
       0,
       Math.min(100, (score / Math.max(1, maxScore)) * 100)
     );
-    if (pct >= 85)
+    if (pct >= 85) {
       return {
         label: "Excellent",
         icon: "trophy",
@@ -85,7 +90,8 @@ export default function Reports() {
         text: "text-emerald-700",
         pct,
       };
-    if (pct >= 70)
+    }
+    if (pct >= 70) {
       return {
         label: "Good",
         icon: "thumbs-up",
@@ -94,7 +100,8 @@ export default function Reports() {
         text: "text-blue-700",
         pct,
       };
-    if (pct >= 50)
+    }
+    if (pct >= 50) {
       return {
         label: "Average",
         icon: "trending-up",
@@ -103,6 +110,7 @@ export default function Reports() {
         text: "text-amber-700",
         pct,
       };
+    }
     return {
       label: "Keep Practicing",
       icon: "fitness",
@@ -113,9 +121,12 @@ export default function Reports() {
     };
   };
 
-  if (loading) {
-    return <ResponsiveGridSkeleton />;
-  }
+  const handleReport = async (quizId: string, reportId: string) => {
+    await dispatch(fetchQuiz(quizId));
+    router.push(`/components/report/detailedReport?id=${reportId}`);
+  };
+
+  if (loading) return <ResponsiveGridSkeleton />;
 
   if (!reports.length) {
     return (
@@ -142,7 +153,7 @@ export default function Reports() {
               No Reports Yet
             </Text>
             <Text className="text-sm text-slate-500 text-center">
-              Complete your first quiz to see your progress report here
+              Reports are shown only for quizzes attempted by the student
             </Text>
           </View>
         </ScrollView>
@@ -155,7 +166,7 @@ export default function Reports() {
       {/* Header */}
       <View className="bg-white ps-5 py-3 border-b border-slate-100">
         <Text className="text-lg font-bold text-slate-900">
-          Child’s Quiz Performance
+          Quiz Performance
         </Text>
         <Text className="text-xs text-slate-500 mt-0.5">
           Showing the last {Math.min(reports.length, 10)} quiz attempts
@@ -173,7 +184,8 @@ export default function Reports() {
           />
         }
       >
-        {reports.map((r, index) => {
+        {reports.map((r) => {
+          const reportId = r?._id;
           const title = r?.quiz?.title || "Untitled Quiz";
           const score = r?.score ?? 0;
           const maxScore = r?.maxScore ?? 0;
@@ -183,13 +195,13 @@ export default function Reports() {
 
           return (
             <TouchableOpacity
-              key={r?.id || index}
+              key={reportId}
               className="mb-4"
               activeOpacity={0.95}
             >
               <View className="rounded-2xl bg-white border border-slate-200 shadow-md overflow-hidden">
                 <View className="p-4">
-                  {/* Title Section */}
+                  {/* Title */}
                   <View className="flex-row items-start mb-3">
                     <View className="flex-1">
                       <Text className="text-base font-bold text-slate-900 mb-1">
@@ -251,7 +263,7 @@ export default function Reports() {
                   <TouchableOpacity
                     className="flex-row items-center justify-center py-2.5 rounded-xl bg-indigo-600"
                     activeOpacity={0.8}
-                    onPress={() => router.push('/components/report/detailedReport')}
+                    onPress={() => handleReport(r?.quiz?._id, reportId)}
                   >
                     <Text className="text-white text-sm font-semibold mr-2">
                       View Detailed Report

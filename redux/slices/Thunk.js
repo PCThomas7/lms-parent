@@ -41,3 +41,15 @@ export const fetchStudentReport = createAsyncThunk(
     }
   }
 );
+
+export const fetchQuiz = createAsyncThunk(
+  "quiz/fetchQuiz",
+  async (quizId, thunkAPI) => {
+    try {
+      const response = await service.getQuiz(quizId);
+      return response.quiz;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message || "Quiz not fetched");
+    }
+  }
+);

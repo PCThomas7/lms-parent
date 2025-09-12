@@ -4,7 +4,7 @@ import { fetchStudentReport } from "./Thunk";
 import type { RootState } from '../store'; 
 
 interface quizData {
-  id: string;
+  _id: string;
   title: string;
   description: string;
 }
@@ -14,7 +14,7 @@ interface quizAnswers {
 }
 
 interface reportItem {
-  id: string;
+  _id: string;
   quiz: quizData;
   user: string;
   answers: quizAnswers;
@@ -26,6 +26,7 @@ interface reportItem {
   incorrectAnswers: number;
   unattemptedAnswers: number;
   attemptNumber: number;
+  createdAt:number;
   submittedAt: string;
 }
 
@@ -59,7 +60,7 @@ const reportSlice = createSlice({
           state.loading = false;
           state.error = null;
           state.data = action.payload;
-          // console.log("reportData in slice : ",action.payload)
+          // console.log("reportData in slice : ",action.payload[0])
         }
       )
       .addCase(fetchStudentReport.rejected, (state, action) => {
