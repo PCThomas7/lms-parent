@@ -130,7 +130,7 @@ const DetailedReport = () => {
 
       {/* Bottom Buttons */}
       <View className="flex-row justify-between p-5 border-t border-gray-200 bg-white">
-        <TouchableOpacity className="bg-indigo-600 px-6 py-4 rounded-xl flex-1 mx-2 items-center shadow-sm">
+        <TouchableOpacity className="bg-indigo-600 px-6 py-4 rounded-xl flex-1 mx-2 items-center shadow-sm" onPress={() => router.push(`/components/report/reportAnalytics?id=${id}&quizId=${quiz?._id}&title=${quiz.title}`)}>
           <Text className="text-white text-center font-semibold">Analytics</Text>
         </TouchableOpacity>
         <TouchableOpacity className="bg-indigo-600 px-6 py-4 rounded-xl flex-1 mx-2 items-center shadow-sm" onPress={() => router.push(`/components/report/solutions?id=${id}`)}>

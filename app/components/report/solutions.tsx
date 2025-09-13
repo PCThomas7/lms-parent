@@ -51,6 +51,7 @@ const Solutions: React.FC = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const data = useAppSelector(selectreport);
   const newData: Report | undefined = data.find((item) => item._id === id);
+  console.log("newData : ",newData)
   const sections = useAppSelector(selectSections);
   const [questionHeights, setQuestionHeights] = useState<{
     [questionId: string]: number;
@@ -197,7 +198,7 @@ const Solutions: React.FC = () => {
         />
 
         {/* Question */}
-        <View className="mb-3 px-5 p-4 bg-slate-50 rounded-xl">
+        <View className="mb-3 px-5 p-4 bg-white rounded-xl">
           <View className="flex-column items-start gap-2 mb-2">
             <Text className="text-base font-semibold text-black">
               Question {""} {currentQuestionIndex + 1} of{" "}

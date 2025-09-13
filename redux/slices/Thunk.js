@@ -53,3 +53,19 @@ export const fetchQuiz = createAsyncThunk(
     }
   }
 );
+
+export const fetchDetailedReport = createAsyncThunk(
+  "quiz/detailedQuizReport",
+  async (params, thunkAPI) => {
+    console.log("ids in thunk : ", params.quizId, params.studentId);
+    try {
+      const response = await service.getStudentDetailedReport(
+        params.quizId,
+        params.studentId
+      );
+      return response;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message || "Quiz not fetched");
+    }
+  }
+);

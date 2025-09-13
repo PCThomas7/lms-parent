@@ -113,7 +113,7 @@ export default function Reports() {
     }
     return {
       label: "Keep Practicing",
-      icon: "fitness",
+      icon: "alert-circle",
       gradient: ["#EF4444"],
       bg: "bg-rose-50",
       text: "text-rose-700",
@@ -123,7 +123,7 @@ export default function Reports() {
 
   const handleReport = async (quizId: string, reportId: string) => {
     await dispatch(fetchQuiz(quizId));
-    router.push(`/components/report/detailedReport?id=${reportId}`);
+    router.push(`/components/report/quizReport?id=${reportId}`);
   };
 
   if (loading) return <ResponsiveGridSkeleton />;

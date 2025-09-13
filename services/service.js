@@ -48,11 +48,13 @@ const service = {
     }
   },
 
-  getStudentDetailedReport: async (quizId, userId) => {
+  getStudentDetailedReport: async (quizId, studentId) => {
     try {
       const response = await api.get(
-        `/quizzes/${quizId}/attempts/report?userId=${userId}`
+        `/quizzes/${quizId}/attempts/report?userId=${studentId}`
       );
+          console.log("response : ",response)
+
       return response.data;
     } catch (error) {
       console.error("Error fetching student detailed report:", error);
