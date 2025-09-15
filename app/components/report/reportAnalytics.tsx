@@ -13,14 +13,15 @@ import { useAppDispatch } from "@/redux/hooks";
 import { fetchDetailedReport } from "@/redux/slices/Thunk";
 
 interface ChildData {
-  id?: string;
+  _id?: string;
+  id?: string; // keeping both in case your backend uses _id
   name?: string;
   rollNumber?: string;
 }
 
 const ReportAnalytics = () => {
   const router = useRouter();
-  const dispatch =useAppDispatch();
+  const dispatch = useAppDispatch();
   const { quizId, title } = useLocalSearchParams<{
     id?: string;
     quizId?: string;
@@ -28,37 +29,38 @@ const ReportAnalytics = () => {
   }>();
   const [childData, setChildData] = useState<ChildData | null>(null);
 
-   const getChildData = async () => {
-      try {
-        const child = await SecureStore.getItemAsync("children");
-        if (child) {
-          const parsedChild = JSON.parse(child);
-          setChildData(parsedChild[0] || parsedChild);
-        }
-      } catch (error) {
-        console.error("Failed to parse child data:", error);
+  const getChildData = async () => {
+    try {
+      const child = await SecureStore.getItemAsync("children");
+      if (child) {
+        const parsedChild = JSON.parse(child);
+        setChildData(parsedChild[0] || parsedChild);
       }
-    };
+    } catch (error) {
+      console.error("Failed to parse child data:", error);
+    }
+  };
 
-const fetchReport = async () => {
-  if (childData?.id && quizId) {
-    dispatch(fetchDetailedReport({ 
-      quizId: quizId, 
-      studentId: childData.id 
-    }));
-  }
-};
+  const fetchReport = async (quizId: string, studentId: string) => {
+    if (studentId && quizId) {
+      dispatch(fetchDetailedReport({ quizId, studentId } as any));
+    }
+  };
 
+  // load student data on mount
   useEffect(() => {
     getChildData();
-  if (childData?.id && quizId) {
-    fetchReport();
-  }
-}, [childData?.id, quizId]);
+  }, []);
+
+  // fetch report when both quizId + childData are ready
+  useEffect(() => {
+    if ((childData?.id || childData?._id) && quizId) {
+      fetchReport(quizId as string, childData.id || childData._id!);
+    }
+  }, [childData, quizId]);
 
   const handleCardPress = (screen: string) => {
-    console.log(`Navigating to: ${screen}`);
-    // router.push(`/${screen}`);
+    router.push(`/components/report/${screen}` as any);
   };
 
   const analyticsOptions = [
@@ -67,14 +69,14 @@ const fetchReport = async () => {
       description: "Understand progress across subjects, chapters, and topics.",
       icon: <Feather name="book-open" size={24} color="#fff" />,
       color: "#10b981",
-      screen: "subject-wise",
+      screen: "subjectAnalytics",
     },
     {
       label: "Difficulty-wise Analytics",
       description: "See performance on easy, medium, and hard level questions.",
       icon: <Feather name="activity" size={24} color="#fff" />,
       color: "#ef4444",
-      screen: "difficulty-wise",
+      screen: "difficultyAnalytics",
     },
     {
       label: "Question-wise Analytics",
@@ -88,7 +90,7 @@ const fetchReport = async () => {
         />
       ),
       color: "#8b5cf6",
-      screen: "question-type",
+      screen: "questionAnalytics",
     },
   ];
 
@@ -100,7 +102,6 @@ const fetchReport = async () => {
       />
 
       {!childData ? (
-        // Show skeleton while loading student data
         <ResponsiveGridSkeleton />
       ) : (
         <ScrollView
@@ -156,7 +157,7 @@ const fetchReport = async () => {
                 justifyContent: "space-between",
               }}
             >
-              {/* Left Section (Icon + Texts) */}
+              {/* Left Section */}
               <View className="flex-row items-start flex-1">
                 <View
                   style={{

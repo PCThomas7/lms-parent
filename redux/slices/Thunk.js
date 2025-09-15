@@ -57,7 +57,6 @@ export const fetchQuiz = createAsyncThunk(
 export const fetchDetailedReport = createAsyncThunk(
   "quiz/detailedQuizReport",
   async (params, thunkAPI) => {
-    console.log("ids in thunk : ", params.quizId, params.studentId);
     try {
       const response = await service.getStudentDetailedReport(
         params.quizId,
