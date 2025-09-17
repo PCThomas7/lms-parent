@@ -59,8 +59,12 @@ const ReportAnalytics = () => {
     }
   }, [childData, quizId]);
 
-  const handleCardPress = (screen: string) => {
-    router.push(`/components/report/${screen}` as any);
+  const handleCardPress = (screen: string, label: string) => {
+    if (screen === "difficulty-questionAnalytics") {
+      router.push(`/components/report/${screen}?page=${label}`);
+    }else{
+          router.push(`/components/report/${screen}` as any);
+    }
   };
 
   const analyticsOptions = [
@@ -76,7 +80,7 @@ const ReportAnalytics = () => {
       description: "See performance on easy, medium, and hard level questions.",
       icon: <Feather name="activity" size={24} color="#fff" />,
       color: "#ef4444",
-      screen: "difficultyAnalytics",
+      screen: "difficulty-questionAnalytics",
     },
     {
       label: "Question-wise Analytics",
@@ -90,7 +94,7 @@ const ReportAnalytics = () => {
         />
       ),
       color: "#8b5cf6",
-      screen: "questionAnalytics",
+      screen: "difficulty-questionAnalytics",
     },
   ];
 
@@ -140,7 +144,7 @@ const ReportAnalytics = () => {
           {analyticsOptions.map((option, index) => (
             <Pressable
               key={index}
-              onPress={() => handleCardPress(option.screen)}
+              onPress={() => handleCardPress(option.screen,option.label)}
               className="rounded-xl overflow-hidden mb-5 mt-1"
               android_ripple={{ color: "#f3f4f6", foreground: true }}
               style={{
