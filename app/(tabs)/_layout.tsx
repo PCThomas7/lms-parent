@@ -57,6 +57,11 @@ export default function TabLayout() {
       iconName: { focused: "stats-chart", outline: "stats-chart-outline" }, // charts/metrics
     },
     {
+      name: "courses",
+      title: "courses",
+      iconName: { focused: "document-text", outline: "document-text-outline" }, // documents/reports
+    },
+    {
       name: "reports",
       title: "Reports",
       iconName: { focused: "document-text", outline: "document-text-outline" }, // documents/reports

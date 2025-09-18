@@ -16,6 +16,8 @@ import authService from "../../../services/authService";
 import * as SecureStore from "expo-secure-store";
 import { router } from "expo-router";
 import { notifyAuthChange } from "@/utils/auth";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
 // import AuthOptions from "./GoogleAuth";
 
 type LoginProps = {
@@ -85,13 +87,58 @@ const Login: React.FC<LoginProps> = ({ toggleAuth }) => {
     return isValid;
   };
 
+  const getPushToken = async () => {
+    if (Platform.OS === "android") {
+      await Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "#FF231F7C",
+        sound: "default",
+      });
+    }
+
+    if (Device.isDevice) {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+
+      if (finalStatus !== "granted") {
+        console.log("Permission not granted to get push token");
+        return null;
+      }
+
+      try {
+        const { data: token } = await Notifications.getDevicePushTokenAsync();
+        return token;
+      } catch (e) {
+        console.log("Error getting push token:", e);
+        return null;
+      }
+    } else {
+      console.log("Must use physical device for push notifications");
+      return null;
+    }
+  };
+
   const handleLogin = async () => {
     if (!validateForm()) return;
 
     setIsLoading(true);
 
     try {
-      const data = await authService.login(formData.email, formData.password);
+      const pushToken = await getPushToken();
+      console.log("pushtoken : ",pushToken)
+      const data = await authService.login(
+        formData.email,
+        formData.password,
+        pushToken
+      );
       const { user, token, refreshToken } = data;
 
       if (user.role === "Parent") {
@@ -126,10 +173,12 @@ const Login: React.FC<LoginProps> = ({ toggleAuth }) => {
 
   const handleGoogleSignIn = async (googleData: googleData) => {
     try {
+      const pushToken = await getPushToken();
       const userInfo = {
         name: googleData.name,
         email: googleData.email,
         sub: googleData.sub,
+        pushToken: pushToken || "fallback-token",
       };
       const res = await authService.googleLogin(userInfo);
       const { token, refreshToken, user } = res.data;

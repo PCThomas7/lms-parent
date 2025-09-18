@@ -19,6 +19,10 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "notification": {
+        "icon": "./assets/images/favicon/notification.png",
+        "color": "#E91E63"
+      },
       "edgeToEdgeEnabled": true,
       "package": "com.professorpcthomas.com.parentsApp"
     },
@@ -32,9 +36,8 @@
       "@react-native-google-signin/google-signin",
       [
         "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
+       {
+          "image": "./assets/images/splashScreen/transparent.png",
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }

@@ -20,7 +20,7 @@ const service = {
     );
     return response.data;
   },
-  
+
   getQuizHighestScore: async (quizId) => {
     try {
       const response = await api.get(`/quizzes/${quizId}/highest-score`);
@@ -67,6 +67,28 @@ const service = {
     } catch (error) {
       console.error("Error fetching quiz attempt report:", error);
       throw error;
+    }
+  },
+
+  getChildCourses: async (childId) => {
+    try {
+      const response = await api.get(`/parent/children/${childId}/courses`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching child courses:", error);
+      throw new Error("Failed to fetch child courses");
+    }
+  },
+
+  getCourseDetailedAnalytics: async (courseId, studentId) => {
+    try {
+      const response = await api.get(
+        `/progress/course/${courseId}/student/${studentId}/analytics`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching course analytics:", error);
+      throw new Error("Failed to fetch course analytics");
     }
   },
 };

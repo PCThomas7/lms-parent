@@ -14,12 +14,11 @@ import ResponsiveGridSkeleton from "../skeltons/skelton";
 import service from "@/services/service";
 
 const DetailedReport = () => {
-  const { id } = useLocalSearchParams();
+  const { id , quizId , studentId } = useLocalSearchParams();
   const router = useRouter();
 
   const data = useAppSelector(selectreport);
   const newData = data.find((item) => item._id === id);
-  // console.log("newData : ",newData)
 
   const [highScore, setHighScore] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
