@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import {
-  StyleSheet,
   Text,
   View,
   Animated,
@@ -9,25 +8,14 @@ import {
   TouchableOpacity,
   Easing,
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 interface NotificationBannerProps {
   title: string;
   body: string;
-  color?: string;
   type?: string;
-  studentId?: string;
-  studentName?: string;
-  quizId?: string;
-  quizTitle?: string;
-  reportId?: string;
-  score?: string;
-  maxScore?: string;
-  percentage?: string;
-  timeSpent?: string;
-  submittedAt?: string;
   action?: 'view_results' | 'dismiss';
   onViewResults?: () => void;
   onDismiss?: () => void;
@@ -36,189 +24,125 @@ interface NotificationBannerProps {
 const NotificationBanner: React.FC<NotificationBannerProps> = ({
   title,
   body,
-  color = '#6366f1',
   type,
-  studentId,
-  studentName,
-  quizId,
-  quizTitle,
-  reportId,
-  score,
-  maxScore,
-  percentage,
-  timeSpent,
-  submittedAt,
   action = 'view_results',
   onViewResults,
   onDismiss,
 }) => {
   const translateY = useRef(new Animated.Value(-150)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
 
   const slideIn = () => {
-    Animated.timing(translateY, {
-      toValue: Platform.OS === 'ios' ? 50 : 30,
-      duration: 350,
-      easing: Easing.out(Easing.exp),
-      useNativeDriver: true,
-    }).start();
+    Animated.parallel([
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 400,
+        easing: Easing.out(Easing.back(1.2)),
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 400,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      })
+    ]).start();
   };
 
   const slideOutAndDismiss = () => {
-    Animated.timing(translateY, {
-      toValue: -200,
-      duration: 350,
-      easing: Easing.in(Easing.exp),
-      useNativeDriver: true,
-    }).start(() => {
+    Animated.parallel([
+      Animated.timing(translateY, {
+        toValue: -200,
+        duration: 300,
+        easing: Easing.in(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 300,
+        easing: Easing.in(Easing.ease),
+        useNativeDriver: true,
+      })
+    ]).start(() => {
       onDismiss?.();
     });
   };
 
   useEffect(() => {
     slideIn();
-
-    // Auto-dismiss after 5s
-    const timer = setTimeout(() => {
-      slideOutAndDismiss();
-    }, 5000);
-
-    return () => clearTimeout(timer);
   }, []);
 
-  const getIconName = () => {
-    if (type === 'quiz_results') return 'clipboard-check';
-    return 'information';
-  };
-
-  const getIcon = () => {
-    if (type === 'quiz_results') return 'clipboard-check-outline';
-    return 'information-outline';
+  const getIconName = (): keyof typeof Ionicons.glyphMap => {
+    if (type === 'quiz_results') {
+      return 'clipboard-check-outline' as keyof typeof Ionicons.glyphMap;
+    }
+    return 'notifications-outline' as keyof typeof Ionicons.glyphMap;
   };
 
   return (
     <Animated.View
-      style={[styles.container, { transform: [{ translateY }], backgroundColor: color }]}
+      className="absolute left-4 right-4 rounded-xl p-4 z-50 border bg-black"
+      style={[
+        { 
+          transform: [{ translateY }],
+          opacity,
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 4,
+          },
+          shadowOpacity: 0.3,
+          shadowRadius: 4.65,
+          elevation: 8,
+          top: Platform.OS === 'ios' ? 50 : 30,
+          borderColor: 'rgba(255, 255, 255, 0.1)',
+        }
+      ]}
     >
-      <View style={styles.topRow}>
-        <MaterialCommunityIcons
-          name={getIcon()}
-          size={28}
-          color="white"
-          style={styles.icon}
-        />
-        <View style={styles.textContainer}>
-          <Text style={styles.title} numberOfLines={1}>{title}</Text>
-          <Text style={styles.body} numberOfLines={2}>{body}</Text>
-          
-          {/* Additional quiz info for quiz results */}
-          {type === 'quiz_results' && score && maxScore && (
-            <View style={styles.quizInfo}>
-              <Text style={styles.quizScore}>
-                Score: {score}/{maxScore} ({percentage}%)
-              </Text>
-              {timeSpent && (
-                <Text style={styles.quizTime}>Time: {timeSpent}</Text>
-              )}
-            </View>
-          )}
+      <View className="flex-row items-start mb-3">
+        <View className="w-10 h-10 rounded-full bg-white/15 justify-center items-center mr-3 mt-0.5">
+          <Ionicons 
+            name={getIconName()} 
+            size={24} 
+            color="#fff" 
+          />
         </View>
         
-        <TouchableOpacity onPress={slideOutAndDismiss} style={styles.closeIcon}>
+        <View className="flex-1 mr-2">
+          <Text className="text-white font-bold text-base mb-1 tracking-wide" numberOfLines={1}>
+            {title}
+          </Text>
+          <Text className="text-white/85 text-sm leading-5 font-normal" numberOfLines={3}>
+            {body}
+          </Text>
+        </View>
+        
+        <TouchableOpacity 
+          onPress={slideOutAndDismiss} 
+          className="p-1 rounded-xl bg-white/10"
+          hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
+        >
           <Ionicons name="close" size={20} color="#ffffff" />
         </TouchableOpacity>
       </View>
 
       {action === 'view_results' && onViewResults && (
         <TouchableOpacity
-          style={styles.actionButton}
+          className="flex-row items-center justify-center bg-white/15 py-2.5 px-4 rounded-xl border border-white/20"
           onPress={() => {
             onViewResults();
             slideOutAndDismiss();
           }}
+          activeOpacity={0.8}
         >
-          <Text style={styles.actionButtonText}>VIEW RESULTS →</Text>
+          <Text className="text-white font-semibold text-sm tracking-wide">
+            View Results
+          </Text>
+          <Ionicons name="arrow-forward" size={16} color="#fff" className="ml-1.5" />
         </TouchableOpacity>
       )}
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: '23%',
-    paddingTop: Platform.OS === 'ios' ? 50 : 30,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    width: '100%',
-    zIndex: 9999,
-    elevation: 10,
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
-  },
-  topRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  icon: {
-    marginRight: 12,
-    marginTop: 4,
-  },
-  textContainer: {
-    flex: 1,
-  },
-  title: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    color: '#fff',
-    marginBottom: 4,
-  },
-  body: {
-    fontSize: 14,
-    color: '#e5e7eb',
-    marginBottom: 8,
-    lineHeight: 18,
-  },
-  quizInfo: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  quizScore: {
-    fontSize: 12,
-    color: '#fff',
-    fontWeight: '600',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
-  },
-  quizTime: {
-    fontSize: 12,
-    color: '#fff',
-    fontWeight: '500',
-    opacity: 0.9,
-  },
-  closeIcon: {
-    padding: 4,
-    marginLeft: 8,
-  },
-  actionButton: {
-    marginTop: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    alignSelf: 'flex-start',
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  actionButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    letterSpacing: 0.5,
-    fontSize: 12,
-  },
-});
 
 export default NotificationBanner;

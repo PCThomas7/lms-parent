@@ -21,15 +21,7 @@
 //   }) => void;
 // }
 
-// interface GoogleSignInResponse {
-//   data: {
-//     user: {
-//       email: string;
-//       name: string;
-//       id: string;
-//     };
-//   };
-// }
+
 
 // export default function AuthOptions({
 //   isLoading,
@@ -59,13 +51,13 @@
 //       });
 
 //       // 2. Perform the sign-in
-//       const response = (await GoogleSignin.signIn()) as GoogleSignInResponse;
+//       const response = await GoogleSignin.signIn();
 
 //       // 3. Call the parent handler with the relevant data
 //       handleGoogleSignIn({
-//         email: response.data.user.email,
-//         name: response.data.user.name,
-//         sub: response.data.user.id,
+//         email: response.user.email,
+//         name: response.user.name,
+//         sub: response.user.id,
 //       });
 //     } catch (error: any) {
 //       handleAuthError(error);

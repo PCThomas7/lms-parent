@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "405704694807",
+    "project_id": "chaithanya-e8ca5",
+    "storage_bucket": "chaithanya-e8ca5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405704694807:android:ac91adc1038e51dd5a1052",
+        "android_client_info": {
+          "package_name": "com.professorpcthomas.com.parentsApp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3bM68bJjxatbL2EYnb5e4Kwcb-yU9mOQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405704694807:android:3e43fb50857f701d5a1052",
+        "android_client_info": {
+          "package_name": "com.profpcthomasclasses.Chaithanya"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3bM68bJjxatbL2EYnb5e4Kwcb-yU9mOQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

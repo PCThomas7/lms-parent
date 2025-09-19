@@ -16,6 +16,9 @@ import { store } from "../redux/store";
 import LoadingScreen from "./components/LoadingScreen";
 import { useNotificationHandler } from "../hooks/useNotificationHandler";
 import NotificationBanner from "./components/NotificationBanner";
+import {
+  GoogleSignin,
+} from '@react-native-google-signin/google-signin';
 
 import "../global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -32,6 +35,18 @@ export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
+
+  // useEffect(()=>{
+  //     const logout = async() => {
+  //       GoogleSignin.configure({
+  //           webClientId: '725112630139-rgj27jcug4ggeco8ggujmn415j2ptr39.apps.googleusercontent.com',
+  //         });
+  //         await GoogleSignin.signOut();
+  //         const token = await SecureStore.deleteItemAsync("authToken");
+  //         setIsLoggedIn(!!token);
+  //     }
+  //     logout()
+  // })
 
   const checkAuth = async () => {
     try {
@@ -123,7 +138,6 @@ export default function RootLayout() {
               <NotificationBanner
                 title={notification.title}
                 body={notification.body}
-                color={notification.color}
                 type={notification.type}
                 studentId={notification.studentId}
                 studentName={notification.studentName}

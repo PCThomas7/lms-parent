@@ -114,7 +114,7 @@ const Login: React.FC<LoginProps> = ({ toggleAuth }) => {
       }
 
       try {
-        const { data: token } = await Notifications.getDevicePushTokenAsync();
+        const { data: token } = await Notifications.getExpoPushTokenAsync();
         return token;
       } catch (e) {
         console.log("Error getting push token:", e);
@@ -133,7 +133,7 @@ const Login: React.FC<LoginProps> = ({ toggleAuth }) => {
 
     try {
       const pushToken = await getPushToken();
-      console.log("pushtoken : ",pushToken)
+      // console.log("pushtoken : ",pushToken)
       const data = await authService.login(
         formData.email,
         formData.password,

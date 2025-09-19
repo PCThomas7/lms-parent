@@ -28,6 +28,7 @@ const ReportAnalytics = () => {
     title?: string;
   }>();
   const [childData, setChildData] = useState<ChildData | null>(null);
+  // console.log("childData : ",childData)
 
   const getChildData = async () => {
     try {
