@@ -59,7 +59,7 @@ export default function TabLayout() {
     {
       name: "courses",
       title: "courses",
-      iconName: { focused: "document-text", outline: "document-text-outline" }, // documents/reports
+      iconName: { focused: "book", outline: "book-outline" }, // documents/reports
     },
     {
       name: "reports",

@@ -1,12 +1,8 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 
 interface UserDetails {
   name: string;
@@ -19,12 +15,22 @@ interface Child {
   name: string;
   email: string;
   rollNumber: string;
-  joinDate?: string; // ISO string
+  joinDate?: string;
+}
+
+interface RecentPerformance {
+  maxScore: number;
+  percentage: number;
+  quizId: string;
+  quizTitle: string;
+  score: number;
+  submittedAt: string;
 }
 
 interface ParentDashboardBannerProps {
   user: UserDetails | null;
   children: Child[];
+  recentPerformance?: RecentPerformance;
   loading?: boolean;
   onRefresh?: () => void;
 }
@@ -32,11 +38,11 @@ interface ParentDashboardBannerProps {
 const ParentDashboardBanner: React.FC<ParentDashboardBannerProps> = ({
   user,
   children,
+  recentPerformance,
   loading = false,
-  onRefresh,
 }) => {
-  const [showDetails, setShowDetails] = useState(false);
-  const [expandedChild, setExpandedChild] = useState<string | null>(null);
+  const firstChild = children[0];
+  const router = useRouter();
 
   const getCurrentGreeting = () => {
     const hour = new Date().getHours();
@@ -45,40 +51,9 @@ const ParentDashboardBanner: React.FC<ParentDashboardBannerProps> = ({
     return "Good evening";
   };
 
-  const getCurrentDate = () => {
-    const options = { weekday: "long", month: "long", day: "numeric" } as const;
-    return new Date().toLocaleDateString("en-US", options);
-  };
-
-  const getChildCountText = () => {
-    const count = children.length;
-    if (count === 0) return "No children enrolled";
-    if (count === 1) return "1 child enrolled";
-    return `${count} children enrolled`;
-  };
-
-  const toggleDetails = () => {
-    setShowDetails((s) => !s);
-    if (showDetails) setExpandedChild(null);
-  };
-
-  const toggleChildDetails = (childId: string) => {
-    setExpandedChild(expandedChild === childId ? null : childId);
-  };
-
-  const formatJoinDate = (iso?: string) => {
-    if (!iso) return "-";
-    const d = new Date(iso);
-    return d.toLocaleDateString("en-GB", {
-      year: "numeric",
-      month: "short",
-      day: "2-digit",
-    });
-  };
-
   if (loading) {
     return (
-      <View className="min-h-[200px] items-center justify-center rounded-xl p-6 mb-6 bg-[#DA1C5C]">
+      <View className="min-h-[200px] items-center justify-center rounded-xl p-6 mb-6 bg-[#5A3FEC]">
         <ActivityIndicator size="large" color="#ffffff" />
         <Text className="text-white mt-2 text-sm">Loading dashboard...</Text>
       </View>
@@ -86,149 +61,76 @@ const ParentDashboardBanner: React.FC<ParentDashboardBannerProps> = ({
   }
 
   return (
-    <View className="mb-6 overflow-hidden rounded-xl">
-      <LinearGradient
-        colors={["#DA1C5C", "#F35B8E"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        className="p-4 rounded-xl"
-      >
-        {/* soft decorations */}
-        <View className="absolute w-32 h-32 rounded-full bg-white/12 -right-9 -top-9" />
-        <View className="absolute w-24 h-24 rounded-full bg-white/12 -left-7 -bottom-10" />
-
-        {/* Top date pill */}
-        <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center px-3 py-1.5 rounded-full bg-white/18">
-            <Ionicons name="calendar" size={16} color="#fff" />
-            <Text className="ml-1.5 text-xs font-semibold text-white">
-              {getCurrentDate()}
+    <View className="mb-5 p-5 rounded-2xl overflow-hidden bg-indigo-600 shadow-lg shadow-black/20">
+        {/* Combined Greeting and Child Overview */}
+        <View className="mb-4">
+          <Text className="text-xl font-bold text-white">
+            {getCurrentGreeting()}, {user?.name?.split(" ")[0] || "Parent"}
+          </Text>
+          {firstChild && (
+            <Text className="text-white/90 text-base font-semibold mt-1">
+              Here's {firstChild.name}'s learning overview
             </Text>
-          </View>
-
-          {onRefresh ? (
-            <TouchableOpacity 
-              onPress={onRefresh} 
-              className="flex-row items-center px-3 py-1.5 rounded-full bg-white"
-              activeOpacity={0.8}
-            >
-              <Ionicons name="refresh" size={16} color="#DA1C5C" />
-            </TouchableOpacity>
-          ) : null}
+          )}
         </View>
 
-        {/* Greeting */}
-        <View className="flex-row items-center my-4">
-          <View className="w-14 h-14 rounded-full bg-white/22 border-2 border-white/35 items-center justify-center mr-3">
-            <Ionicons name="person" size={26} color="#fff" />
-          </View>
-          <View className="flex-1">
-            <Text className="text-2xl font-extrabold text-white">
-              {getCurrentGreeting()}, {user?.name?.split(" ")[0] || "Parent"}!
-            </Text>
-            <Text className="text-white/85 text-sm mt-0.5">
-              {user?.email}
-            </Text>
-          </View>
-        </View>
+        {/* jdf */}
 
-        {/* Children summary */}
-        <TouchableOpacity
-          onPress={toggleDetails}
-          activeOpacity={0.8}
-          className="flex-row items-center justify-between p-3 rounded-xl bg-white/12"
-        >
-          <View className="flex-row items-center">
-            <Ionicons name="school" size={20} color="#fff" />
-            <Text className="ml-2 font-bold text-white">
-              {getChildCountText()}
-            </Text>
-          </View>
-
-          {children.length > 0 && (
-            <View className="px-3 py-1.5 rounded-full bg-white/90">
-              <Text className="text-xs font-extrabold text-[#DA1C5C]">
-                {showDetails ? "Hide Details" : "View Details"}
+        {/* Recent performance */}
+        {recentPerformance ? (
+          <View className="mt-2 p-4 rounded-xl bg-white/15">
+            <View className="flex-row items-center mb-2">
+              <Ionicons name="trophy-outline" size={16} color="#fff" />
+              <Text className="text-white font-semibold ml-2 text-sm">
+                Recent Quiz Performance
               </Text>
             </View>
-          )}
-        </TouchableOpacity>
 
-        {/* Children accordion */}
-        {showDetails && (
-          <View className="p-3 mt-3 rounded-xl bg-white/12">
-            {children.length > 0 ? (
-              <>
-                <Text className="font-extrabold text-center text-white mb-2">
-                  Children Details
-                </Text>
-                {children.map((child, index) => {
-                  const key = child._id || String(index);
-                  const isOpen = expandedChild === key;
-                  return (
-                    <View key={key} className="mb-2.5 last:mb-0">
-                      <TouchableOpacity
-                        onPress={() => toggleChildDetails(key)}
-                        activeOpacity={0.8}
-                        className="flex-row items-center justify-between p-2.5 rounded-lg bg-white/10"
-                      >
-                        <View className="flex-row items-center">
-                          <View className="w-7 h-7 rounded-full bg-[#FFD7E6] items-center justify-center mr-2.5">
-                            <Text className="font-extrabold text-[#A10E41]">
-                              {index + 1}
-                            </Text>
-                          </View>
-                          <Text className="font-bold text-white text-base">
-                            {child.name}
-                          </Text>
-                        </View>
-                        <Ionicons
-                          name={isOpen ? "chevron-up" : "chevron-down"}
-                          size={20}
-                          color="#fff"
-                        />
-                      </TouchableOpacity>
+            <Text
+              className="text-white font-bold text-base mb-2"
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {recentPerformance.quizTitle}
+            </Text>
 
-                      {isOpen && (
-                        <View className="p-2.5 mt-1.5 rounded-lg bg-white/12">
-                          <View className="flex-row items-center justify-between mb-2">
-                            <Text className="text-white/80 text-sm">Email</Text>
-                            <Text className="font-bold text-white text-sm">
-                              {child.email || "-"}
-                            </Text>
-                          </View>
-                          <View className="flex-row items-center justify-between mb-2">
-                            <Text className="text-white/80 text-sm">Roll No</Text>
-                            <Text className="font-bold text-white text-sm">
-                              {child.rollNumber || "-"}
-                            </Text>
-                          </View>
-                          <View className="flex-row items-center justify-between">
-                            <Text className="text-white/80 text-sm">Join Date</Text>
-                            <Text className="font-bold text-white text-sm">
-                              {formatJoinDate(child.joinDate)}
-                            </Text>
-                          </View>
-                        </View>
-                      )}
-                    </View>
-                  );
-                })}
-              </>
-            ) : (
-              <View className="items-center justify-center py-4">
-                <Ionicons name="school" size={32} color="#fff" />
-                <Text className="font-bold text-white mt-2">
-                  No children enrolled yet
-                </Text>
-                <Text className="text-white/85 text-xs mt-1 text-center">
-                  Your children's profiles will appear here once registered.
-                </Text>
+            <View className="flex-row items-center justify-between mt-1">
+              <View className="flex-row items-center">
+                <View className="flex-row items-center bg-white/25 px-3 py-1 rounded-full">
+                  <Text className="text-white/90 text-base mr-2 font-medium">
+                    Score:
+                  </Text>
+                  <Text className="text-white text-base font-extrabold">
+                    {recentPerformance.score}
+                    <Text className="text-white/70 text-base font-extrabold">
+                      /{recentPerformance.maxScore}
+                    </Text>
+                  </Text>
+                </View>
               </View>
-            )}
+
+              <TouchableOpacity
+                onPress={() => router.push("/reports")}
+                activeOpacity={0.85}
+                className="flex-row items-center bg-white py-1 px-3 rounded-lg"
+              >
+                <Text className="text-[#5A3FEC] font-bold text-sm mr-1">
+                  View Report
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <View className="mt-2 p-4 rounded-xl bg-white/15 items-center">
+            <Ionicons name="analytics-outline" size={24} color="#fff" />
+            <Text className="text-white mt-2 text-center">
+              No quiz results yet
+            </Text>
+            <Text className="text-white/70 text-xs text-center mt-1">
+              Completed quizzes will appear here
+            </Text>
           </View>
         )}
-      </LinearGradient>
     </View>
   );
 };
